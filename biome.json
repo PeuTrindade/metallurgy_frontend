@@ -1,0 +1,69 @@
+{
+  "formatter": {
+    "enabled": true,
+    "indentStyle": "space",
+    "lineWidth": 120,
+    "indentWidth": 2
+  },
+  "javascript": {
+    "formatter": {
+      "quoteStyle": "single",
+      "semicolons": "asNeeded"
+    }
+  },
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noDoubleEquals": "off",
+        "noGlobalIsNan": "off",
+        "noAssignInExpressions": "off",
+        "noArrayIndexKey": "off",
+        "noAsyncPromiseExecutor": "off",
+        "useIsArray": "off",
+        "noPrototypeBuiltins": "off"
+      },
+      "style": {
+        "noUselessElse": "off",
+        "noUnusedTemplateLiteral": "off",
+        "useNumberNamespace": "off",
+        "useTemplate": "off",
+        "noInferrableTypes": "off",
+        "noParameterAssign": "off",
+        "noNonNullAssertion": "off",
+        "useImportType": "off",
+        "useEnumInitializers": "off",
+        "useSelfClosingElements": "off",
+        "useConst": "off",
+        "useNodejsImportProtocol": "off",
+        "noVar": "off"
+      },
+      "complexity": {
+        "useLiteralKeys": "off",
+        "noStaticOnlyClass": "off",
+        "useRegexLiterals": "off",
+        "useArrowFunction": "off",
+        "noForEach": "off",
+        "useOptionalChain": "off",
+        "noBannedTypes": "off",
+        "noUselessConstructor": "off",
+        "noThisInStatic": "off",
+        "noExtraBooleanCast": "off"
+      },
+      "a11y": {
+        "noSvgWithoutTitle": "off",
+        "useMediaCaption": "off",
+        "noBlankTarget": "off"
+      },
+      "correctness": {
+        "useExhaustiveDependencies": "off",
+        "noInnerDeclarations": "off",
+        "noUnsafeOptionalChaining": "off"
+      },
+      "performance": {
+        "noDelete": "off"
+      }
+    }
+  }
+}

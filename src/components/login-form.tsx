@@ -25,7 +25,11 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
       if (response.ok) {
         const data = await response.json()
 
-        insertIntoCookies('loginData', data.token, true)
+        insertIntoCookies(
+          'loginData',
+          { token: data.token, expiresIn: new Date().getTime() + 24 * 60 * 60 * 1000 },
+          true,
+        )
         insertIntoSessionStorage('userInfo', data.user, true)
 
         push('/')

@@ -1,19 +1,35 @@
 import '@/styles/globals.css'
+import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
-import { Roboto } from 'next/font/google'
+import { Roboto_Flex } from 'next/font/google'
+import { ReactElement, ReactNode } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
-const roboto = Roboto({ subsets: ['latin'], weight: ['400', '700'] })
+export type NextPageWithLayout<P, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode
+}
 
-export default function App({ Component, pageProps }: AppProps) {
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout<string>
+}
+
+export const robotoFlex = Roboto_Flex({
+  variable: '--roboto_flex',
+  display: 'swap',
+  weight: ['400', '500', '600', '700', '900'],
+  adjustFontFallback: false,
+  subsets: ['latin'],
+})
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout ?? ((page: ReactElement) => page)
+
   return (
     <>
       <ToastContainer />
 
-      <main className={roboto.className}>
-        <Component {...pageProps} />
-      </main>
+      <main className={robotoFlex.className}>{getLayout(<Component {...pageProps} />)}</main>
     </>
   )
 }

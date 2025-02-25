@@ -32,7 +32,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: 'Cadastrar peça',
-            url: '/createPart',
+            url: '/parts/createPart',
           },
         ],
       },

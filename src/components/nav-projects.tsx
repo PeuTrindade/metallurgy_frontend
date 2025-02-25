@@ -8,6 +8,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '@/components/ui/sidebar'
+import { useRouter } from 'next/router'
 
 export function NavProjects({
   projects,
@@ -21,6 +22,8 @@ export function NavProjects({
   }[]
   name: string
 }) {
+  const { pathname } = useRouter()
+
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>{name}</SidebarGroupLabel>
@@ -28,7 +31,13 @@ export function NavProjects({
         {projects.map((item) => (
           <SidebarMenuItem key={item.name}>
             <SidebarMenuButton asChild>
-              <a className="cursor-pointer" onClick={() => item.onClick && item.onClick()} href={item.url}>
+              <a
+                className={`cursor-pointer flex items-center p-2 rounded-md transition-colors ${
+                  pathname === item.url ? 'bg-gray-200 text-black hover:bg-gray-200' : 'hover:bg-gray-150'
+                }`}
+                onClick={() => item.onClick && item.onClick()}
+                href={item.url}
+              >
                 <item.icon />
                 <span>{item.name}</span>
               </a>

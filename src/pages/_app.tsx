@@ -1,3 +1,4 @@
+import { UserContextProvider } from '@/context/userContext'
 import '@/styles/globals.css'
 import { NextPage } from 'next'
 import type { AppProps } from 'next/app'
@@ -29,7 +30,9 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
     <>
       <ToastContainer />
 
-      <main className={robotoFlex.className}>{getLayout(<Component {...pageProps} />)}</main>
+      <UserContextProvider>
+        <main className={robotoFlex.className}>{getLayout(<Component {...pageProps} />)}</main>
+      </UserContextProvider>
     </>
   )
 }

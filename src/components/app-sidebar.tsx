@@ -7,27 +7,52 @@ import { clearLocalStorage } from '@/utils/storageManagerFunctions'
 import { clearSessionStorage } from '@/utils/sessionStorageFunctions'
 import { removeValueIntoCookies } from '@/utils/cookiesManagerFunctions'
 import { useRouter } from 'next/router'
+import { useUser } from '@/context/userContext'
+import { NavMain } from './nav-main'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { push } = useRouter()
+  const { userData } = useUser()
 
   const data = {
     user: {
-      name: 'shadcn',
-      email: 'm@example.com',
+      name: userData.fullName,
+      email: userData.email,
       avatar: '/avatars/shadcn.jpg',
     },
     projects: [
       {
-        name: 'Peças',
+        title: 'Peças',
         url: '/',
         icon: Bolt,
+        items: [
+          {
+            title: 'Listar peças',
+            url: '/',
+          },
+          {
+            title: 'Cadastrar peça',
+            url: '/createPart',
+          },
+        ],
       },
       {
-        name: 'Fluxos',
+        title: 'Fluxos',
         url: '/flows',
         icon: Workflow,
+        items: [
+          {
+            title: 'Listar fluxos',
+            url: '/flows',
+          },
+          {
+            title: 'Cadastrar fluxo',
+            url: '/createFlow',
+          },
+        ],
       },
+    ],
+    AI: [
       {
         name: 'Relatórios',
         url: '/reports',
@@ -72,7 +97,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
 
       <SidebarContent>
-        <NavProjects name="Produção" projects={data.projects} />
+        <NavMain items={data.projects} />
+        <NavProjects name="Gerados por IA" projects={data.AI} />
         <NavProjects name="Conta" projects={data.personal} />
       </SidebarContent>
       <SidebarRail />

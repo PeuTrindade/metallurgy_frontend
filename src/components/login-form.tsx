@@ -10,11 +10,13 @@ import { useState } from 'react'
 import { insertIntoCookies } from '@/utils/cookiesManagerFunctions'
 import { insertIntoSessionStorage } from '@/utils/sessionStorageFunctions'
 import { useRouter } from 'next/router'
+import { useUser } from '@/context/userContext'
 
 export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) {
   const { email, password, errors, register } = LoginSchema()
   const [isLoading, setIsLoading] = useState(false)
   const { push } = useRouter()
+  const { setAccessToken, setUserData } = useUser()
 
   const handleLogin = async () => {
     try {
@@ -31,6 +33,9 @@ export function LoginForm({ className, ...props }: React.ComponentProps<'div'>) 
           true,
         )
         insertIntoSessionStorage('userInfo', data.user, true)
+        setUserData(data.user)
+
+        setAccessToken(data.token)
 
         push('/')
       } else {

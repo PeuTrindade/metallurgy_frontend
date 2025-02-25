@@ -1,5 +1,6 @@
 import { AppSidebar } from '@/components/app-sidebar'
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
+import { useUser } from '@/context/userContext'
 import { me } from '@/requestFunctions/login'
 import { getValueIntoCookies, removeValueIntoCookies } from '@/utils/cookiesManagerFunctions'
 import { clearSessionStorage, insertIntoSessionStorage } from '@/utils/sessionStorageFunctions'
@@ -10,6 +11,7 @@ import { useCallback, useEffect, useState } from 'react'
 export default function Layout({ children }: any) {
   const { push } = useRouter()
   const [isLoadingAuth, setIsLoadingAuth] = useState(true)
+  const { setAccessToken, setUserData } = useUser()
 
   const validateToken = useCallback(async (token: string) => {
     try {
@@ -19,6 +21,10 @@ export default function Layout({ children }: any) {
         const data = await response.json()
 
         insertIntoSessionStorage('userInfo', data.user, true)
+
+        setAccessToken(token)
+        setUserData(data.user)
+
         return true
       }
 

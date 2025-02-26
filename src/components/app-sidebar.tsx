@@ -47,7 +47,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           },
           {
             title: 'Cadastrar fluxo',
-            url: '/createFlow',
+            url: '/flows/create',
           },
         ],
       },
@@ -62,7 +62,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     personal: [
       {
         name: 'Pagamento',
-        url: '/flows',
+        url: '/payment',
         icon: CreditCard,
       },
       {
@@ -72,7 +72,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       },
       {
         name: 'Configurações',
-        url: '/parts',
+        url: '/settings',
         icon: Settings,
       },
       {

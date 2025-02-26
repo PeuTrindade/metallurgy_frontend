@@ -30,22 +30,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { formatDate } from '@/utils/dateFormatter'
 import { useRouter } from 'next/router'
 
-export type TPart = {
+export type TFlow = {
   id: number
   name: string
-  tag: string
+  description: string
   created_at: string
-  hiringCompany: string
 }
 
-export function DataTableDemo({ parts }: { parts: TPart[] }) {
+export function DataFlowDemo({ flows }: { flows: TFlow[] }) {
   const { push } = useRouter()
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-  const columns: ColumnDef<TPart>[] = [
+  const columns: ColumnDef<TFlow>[] = [
     {
       id: 'select',
       header: ({ table }) => (
@@ -66,32 +65,33 @@ export function DataTableDemo({ parts }: { parts: TPart[] }) {
       enableHiding: false,
     },
     {
-      accessorKey: 'tag',
-      header: () => <div className="text-left">Tag</div>,
-      cell: ({ row }) => <div className="text-left">{row.getValue('tag')}</div>,
-    },
-    {
       accessorKey: 'name',
       header: ({ column }) => (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}>
-          Peça <ArrowUpDown />
+          Fluxo <ArrowUpDown />
         </Button>
       ),
       cell: ({ row }) => <div>{row.getValue('name')}</div>,
     },
+
+    {
+      accessorKey: 'description',
+      header: () => <div className="text-center">Descrição</div>,
+      cell: ({ row }) => (
+        <div title={row.getValue('description')} className="text-center font-medium">
+          {(row.getValue('description') as string).length > 30
+            ? `${(row.getValue('description') as string).slice(0, 30)}...`
+            : row.getValue('description')}
+        </div>
+      ),
+    },
     {
       accessorKey: 'created_at',
-      header: () => <div className="text-center">Cadastrada em</div>,
+      header: () => <div className="text-center">Cadastrado em</div>,
       cell: ({ row }) => (
         <div className="text-center font-medium">{formatDate(new Date(row.getValue('created_at') as string))}</div>
       ),
     },
-    {
-      accessorKey: 'hiringCompany',
-      header: () => <div className="text-center">Empresa contratante</div>,
-      cell: ({ row }) => <div className="text-center font-medium">{row.getValue('hiringCompany')}</div>,
-    },
-
     {
       id: 'actions',
       enableHiding: false,
@@ -109,8 +109,8 @@ export function DataTableDemo({ parts }: { parts: TPart[] }) {
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => push(`/parts/${row.original.id}`)}>Ver mais</DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Editar peça</DropdownMenuItem>
-              <DropdownMenuItem>Deletar peça</DropdownMenuItem>
+              <DropdownMenuItem>Editar fluxo</DropdownMenuItem>
+              <DropdownMenuItem>Deletar fluxo</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -119,7 +119,7 @@ export function DataTableDemo({ parts }: { parts: TPart[] }) {
   ]
 
   const table = useReactTable({
-    data: parts,
+    data: flows,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -138,17 +138,16 @@ export function DataTableDemo({ parts }: { parts: TPart[] }) {
   })
 
   const columnNamesMatcher = {
-    tag: 'Tag',
     name: 'Nome',
-    created_at: 'Cadastrada em',
-    hiringCompany: 'Empresa contratante',
+    description: 'Descrição',
+    created_at: 'Cadastrado em',
   }
 
   return (
     <div className="w-full">
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filtrar peças..."
+          placeholder="Filtrar fluxos..."
           value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={(event) => table.getColumn('name')?.setFilterValue(event.target.value)}
           className="max-w-sm"

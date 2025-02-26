@@ -14,8 +14,8 @@ const PageContainer = ({
   linksList,
 }: { children: React.ReactNode; linksList: { name: string; href: string }[] }) => {
   return (
-    <div className="w-full h-full flex flex-col">
-      <div className="flex w-full items-center gap-4 p-4 border-b bg-white shadow-sm">
+    <div className="w-full h-full flex flex-col pt-16">
+      <div className="fixed z-50 top-0 flex w-full items-center gap-4 p-4 border-b bg-white shadow-sm">
         <SidebarTrigger className="-ml-1" />
         <Separator orientation="vertical" className="h-4 w-px bg-gray-300" />
 

@@ -107,7 +107,7 @@ export function DataFlowDemo({ flows }: { flows: TFlow[] }) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => push(`/parts/${row.original.id}`)}>Ver mais</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => push(`/flows/${row.original.id}`)}>Ver mais</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Editar fluxo</DropdownMenuItem>
               <DropdownMenuItem>Deletar fluxo</DropdownMenuItem>

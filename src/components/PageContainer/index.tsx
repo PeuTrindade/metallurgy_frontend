@@ -5,8 +5,6 @@ import {
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
 } from '../ui/breadcrumb'
 
 const PageContainer = ({
@@ -37,7 +35,6 @@ const PageContainer = ({
         )}
       </div>
 
-      {/* Conteúdo da página */}
       <div className="w-full h-full flex flex-col p-6 text-gray-900">{children}</div>
     </div>
   )

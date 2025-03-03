@@ -5,7 +5,7 @@ type TSelectComponent = {
   setValue: any
   id: string
   placeholder: string
-  values: string[]
+  values: { label: string; value: string }[]
   error?: string
   onBlur?: any
 }
@@ -27,8 +27,8 @@ const SelectComponent: React.FC<TSelectComponent> = ({ id, placeholder, setValue
         </SelectTrigger>
         <SelectContent position="popper">
           {values.map((v, key) => (
-            <SelectItem key={key} value={v}>
-              {v}
+            <SelectItem key={key} value={v.value}>
+              {v.label}
             </SelectItem>
           ))}
         </SelectContent>

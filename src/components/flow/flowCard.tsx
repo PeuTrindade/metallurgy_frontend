@@ -11,6 +11,7 @@ import { useUser } from '@/context/userContext'
 import { Separator } from '../ui/separator'
 import CreateFlowSchema from '@/schemas/flows'
 import { Trash2 } from 'lucide-react'
+import { createFlow, createFlowStepModel, TCreateFlow, TCreateStepModel } from '@/requestFunctions/flows'
 
 export function FlowCard() {
   const { push } = useRouter()
@@ -18,25 +19,56 @@ export function FlowCard() {
   const { accessToken } = useUser()
   const { isValid, reset, description, errors, name, register, handleAddStep, fields, remove } = CreateFlowSchema()
 
-  const createPartFn = async () => {
+  const createStepModelFn = async (flowId: number) => {
+    try {
+      let isAllOk = false
+
+      for (const step of fields) {
+        const requestData: TCreateStepModel = {
+          flow_id: flowId,
+          name: step.name,
+        }
+
+        const response = (await createFlowStepModel(accessToken, requestData)) as Response
+
+        if (response.ok) {
+          isAllOk = true
+        } else {
+          isAllOk = false
+        }
+      }
+
+      return isAllOk
+    } catch (error) {
+      toast('Ocorreu um erro inesperado! Tente novamente.', { type: 'error' })
+      return false
+    }
+  }
+
+  const createFlowFn = async () => {
     try {
       setIsLoading(true)
 
-      const requestData: TCreatePart = {
+      const requestData: TCreateFlow = {
         name,
         description,
-        tag,
-        hiringCompany: company,
-        flow_id: +flowId,
       }
 
-      const response = (await createPart(requestData, accessToken)) as Response
+      const response = (await createFlow(accessToken, requestData)) as Response
 
       if (response.ok) {
-        push('/')
-        toast('Peça cadastrada com sucesso!', { type: 'success' })
+        const flowData = await response.json()
+        const isAllStepsOk = await createStepModelFn(flowData.flow.id)
+
+        if (isAllStepsOk) {
+          toast('Fluxo cadastrado com sucesso!', { type: 'success' })
+
+          push('/flows')
+        } else {
+          toast('Ocorreu um erro ao cadastrar o fluxo! Tente novamente.', { type: 'error' })
+        }
       } else {
-        toast('Ocorreu um erro ao cadastrar a peça! Tente novamente.', { type: 'error' })
+        toast('Ocorreu um erro ao cadastrar o fluxo! Tente novamente.', { type: 'error' })
       }
 
       setIsLoading(false)
@@ -108,7 +140,7 @@ export function FlowCard() {
         <Button onClick={() => reset()} variant="outline">
           Limpar
         </Button>
-        <Button loading={isLoading} disabled={!isValid || isLoading} onClick={createPartFn}>
+        <Button loading={isLoading} disabled={!isValid || isLoading} onClick={createFlowFn}>
           Cadastrar
         </Button>
       </CardFooter>

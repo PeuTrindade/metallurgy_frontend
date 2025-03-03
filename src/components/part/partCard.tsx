@@ -10,13 +10,37 @@ import { toast } from 'react-toastify'
 import { createPart, TCreatePart } from '@/requestFunctions/parts'
 import { useRouter } from 'next/router'
 import { useUser } from '@/context/userContext'
+import { getFlows } from '@/requestFunctions/flows'
 
 export function PartCard() {
   const { push } = useRouter()
+  const [flowsOptions, setFlowsOptions] = React.useState<any[]>([])
+  const [isLoadingFlows, setIsLoadingFlows] = React.useState(true)
   const [isLoading, setIsLoading] = React.useState(false)
   const { accessToken } = useUser()
   const { company, isValid, reset, description, errors, flowId, tag, setValue, name, register, setError, clearErrors } =
     CreatePartSchema()
+
+  const getFlowsFn = React.useCallback(async () => {
+    try {
+      const response = (await getFlows(accessToken)) as Response
+
+      if (response.ok) {
+        const data = await response.json()
+
+        setFlowsOptions(
+          data.flows.map((f: any) => ({
+            label: f.name,
+            value: String(f.id),
+          })),
+        )
+      }
+
+      setIsLoadingFlows(false)
+    } catch (error) {
+      toast('Ocorreu um erro inesperado! Tente novamente.', { type: 'error' })
+    }
+  }, [])
 
   const createPartFn = async () => {
     try {
@@ -44,6 +68,10 @@ export function PartCard() {
       toast('Ocorreu um erro inesperado! Tente novamente.', { type: 'error' })
     }
   }
+
+  React.useEffect(() => {
+    getFlowsFn()
+  }, [getFlowsFn])
 
   return (
     <Card className="w-[100%] mt-12 pt-6">
@@ -87,7 +115,7 @@ export function PartCard() {
                 }}
                 id="flowId"
                 placeholder="Selecione o fluxo ao qual a peça pertence"
-                values={['1', '2', '3']}
+                values={flowsOptions}
                 onBlur={() => {
                   if (!flowId) {
                     setError('flowId', { message: 'Preencha o campo acima.' })

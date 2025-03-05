@@ -13,6 +13,7 @@ export type TPartStep = {
   part_id: number
   description: string
   startDate: string
+  name: string
   finishDate: string
 }
 
@@ -60,7 +61,7 @@ const ManagePart = () => {
         Gerencie as etapas da peça, sendo o mais detalhista possível.
       </h2>
 
-      <ManageCards steps={steps} />
+      <ManageCards setSteps={setSteps} steps={steps} />
     </PageContainer>
   )
 }

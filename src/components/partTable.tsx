@@ -108,6 +108,9 @@ export function DataTableDemo({ parts }: { parts: TPart[] }) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
               <DropdownMenuItem onClick={() => push(`/parts/${row.original.id}`)}>Ver mais</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => push(`/parts/manage/${row.original.id}`)}>
+                Gerenciar peça
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Editar peça</DropdownMenuItem>
               <DropdownMenuItem>Deletar peça</DropdownMenuItem>

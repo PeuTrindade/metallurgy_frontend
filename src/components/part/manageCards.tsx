@@ -4,23 +4,56 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '../ui/input'
 import { Label } from '../ui/label'
 import { Textarea } from '../ui/textarea'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ManagePartSchema from '@/schemas/parts/managePart'
+import { toast } from 'react-toastify'
+import { TUpdateStep, updateStep } from '@/requestFunctions/steps'
+import { useUser } from '@/context/userContext'
 
 const ManageCards = ({ steps, setSteps }: { steps: TPartStep[]; setSteps: any }) => {
+  const { accessToken } = useUser()
   const [index, setIndex] = useState(0)
   const currentStep = steps[index]
-  const { register, errors } = ManagePartSchema()
+  const { register, errors, description, startDate, finishDate, setValue } = ManagePartSchema()
 
-  console.log(steps)
+  const updateStepFn = async () => {
+    try {
+      const requestData: TUpdateStep = {
+        description,
+        finishDate,
+        startDate,
+        part_id: currentStep.part_id,
+      }
 
-  const onHandleNext = () => {
-    setIndex(index + 1)
+      const response = (await updateStep(currentStep.id, requestData, accessToken)) as Response
+
+      if (response.ok) {
+        toast('Etapa salva com sucesso!', { type: 'success' })
+
+        setIndex(index + 1)
+      } else {
+        toast('Ocorreu um erro ao salvar etapa! Tente novamente.', { type: 'error' })
+      }
+    } catch (error) {
+      toast('Ocorreu um erro inesperado! Tente novamente.', { type: 'error' })
+    }
+  }
+
+  const onHandleNext = async () => {
+    await updateStepFn()
   }
 
   const onHandlePrevious = () => {
     setIndex(index - 1)
   }
+
+  useEffect(() => {
+    if (currentStep) {
+      setValue('startDate', currentStep.startDate.split('T')[0])
+      setValue('finishDate', currentStep.finishDate.split('T')[0])
+      setValue('description', currentStep.description)
+    }
+  }, [currentStep])
 
   return (
     <Card className="w-[100%] mt-12">
@@ -47,6 +80,7 @@ const ManageCards = ({ steps, setSteps }: { steps: TPartStep[]; setSteps: any })
             <div className="flex flex-col space-y-1.5 w-full">
               <Label htmlFor="description">Descrição da etapa</Label>
               <Textarea
+                height="min-h-[200px]"
                 error={errors.description?.message?.toString()}
                 {...register('description')}
                 placeholder="Descreva sobre a peça, sua função no mercado, o estado atual dela, etc..."

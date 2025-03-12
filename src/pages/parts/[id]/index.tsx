@@ -29,7 +29,7 @@ const Part = () => {
       if (response.ok) {
         const data = await response.json()
 
-        setPart(data)
+        setPart(data.part)
       } else {
         toast('Ocorreu um erro ao buscar peça! Tente novamente.', { type: 'error' })
       }

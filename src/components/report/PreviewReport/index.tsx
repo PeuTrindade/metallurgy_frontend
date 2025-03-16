@@ -1,24 +1,50 @@
+import Editor from '@/components/editor'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Separator } from '@/components/ui/separator'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
-import { useEffect, useState } from 'react'
+import { Download } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import generatePDF, { Margin } from 'react-to-pdf'
 
 type TPreviewReport = {
   report: any
 }
 
 const PreviewReport: React.FC<TPreviewReport> = ({ report }) => {
+  const contentRef = useRef<HTMLDivElement>(null)
   const [reportText, setReportText] = useState('')
+
+  const generatePagePDF = () => {
+    const style = {
+      method: 'open',
+      page: {
+        margin: { top: 10, left: 10, right: 10, bottom: 20 }, // Margem inferior maior
+        format: 'A4',
+        orientation: 'portrait',
+      },
+      overrides: {
+        pdf: {
+          compress: true,
+        },
+        canvas: {
+          useCORS: true,
+        },
+      },
+    }
+
+    generatePDF(contentRef as any, style as any)
+  }
 
   useEffect(() => {
     if (report) {
       const intro = report?.intro?.choices[0]?.message?.content
       const specifications = report?.specifications?.choices[0]?.message?.content
 
-      setReportText(intro + '\n\n' + specifications)
+      const formattedIntro = `<h2>Condições gerais</h2><br />${intro}`
+      const formattedSpecs = `<h2>Condições específicas</h2><br />${specifications}`
+
+      setReportText(formattedIntro + '\n\n' + formattedSpecs)
     }
   }, [])
 
@@ -37,12 +63,7 @@ const PreviewReport: React.FC<TPreviewReport> = ({ report }) => {
           </CardHeader>
 
           <CardContent className="space-y-2">
-            <Textarea
-              value={reportText}
-              onChange={(e) => setReportText(e.target.value)}
-              defaultValue={reportText}
-              height="min-h-[300px]"
-            />
+            <Editor value={reportText} onChange={(text: any) => setReportText(text)} />
           </CardContent>
         </Card>
       </TabsContent>
@@ -52,15 +73,21 @@ const PreviewReport: React.FC<TPreviewReport> = ({ report }) => {
           <CardHeader>
             <CardTitle>Pré-visualização</CardTitle>
             <CardDescription>Veja nesta aba como seu relatório está ficando.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="whitespace-pre-wrap text-justify indent-8">
-              {reportText.split('\n').map((line, index) => (
-                <div key={index}>
-                  <p>{line}</p>
-                </div>
-              ))}
+
+            <div className="pt-3">
+              <Button onClick={generatePagePDF}>
+                <Download /> Baixar relatório
+              </Button>
             </div>
+          </CardHeader>
+          <Separator />
+          <CardContent className="space-y-2 pt-6">
+            <div
+              ref={contentRef as any}
+              className="preview whitespace-pre-wrap text-justify pb-12"
+              // biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+              dangerouslySetInnerHTML={{ __html: reportText }}
+            />
           </CardContent>
         </Card>
       </TabsContent>

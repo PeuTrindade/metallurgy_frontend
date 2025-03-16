@@ -46,8 +46,6 @@ const Flow = () => {
     getFlowFn()
   }, [getFlowFn])
 
-  console.log(flow)
-
   if (!isLoading)
     return (
       <PageContainer linksList={linksList as any}>

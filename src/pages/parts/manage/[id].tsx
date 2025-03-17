@@ -23,6 +23,7 @@ const ManagePart = () => {
   const [part, setPart] = useState<any>({})
   const [isLoading, setIsLoading] = useState(true)
   const [steps, setSteps] = useState<TPartStep[]>([])
+  const [inspection, setInspection] = useState<any>({})
 
   const linksList = [
     {
@@ -40,6 +41,7 @@ const ManagePart = () => {
 
         setPart(data.part)
         setSteps(data.part.steps)
+        setInspection(data.part.inspection)
       } else {
         toast('Ocorreu um erro ao buscar peça! Tente novamente.', { type: 'error' })
       }
@@ -61,7 +63,7 @@ const ManagePart = () => {
         Gerencie as etapas da peça, sendo o mais detalhista possível.
       </h2>
 
-      <ManageCards setSteps={setSteps} steps={steps} />
+      <ManageCards setInspection={setInspection} inspection={inspection} setSteps={setSteps} steps={steps} />
     </PageContainer>
   )
 }

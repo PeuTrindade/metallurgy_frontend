@@ -19,7 +19,7 @@ const PreviewReport: React.FC<TPreviewReport> = ({ report }) => {
     const style = {
       method: 'open',
       page: {
-        margin: { top: 10, left: 10, right: 10, bottom: 20 }, // Margem inferior maior
+        margin: { top: 10, left: 10, right: 10, bottom: 10 }, // Margem inferior maior
         format: 'A4',
         orientation: 'portrait',
       },
@@ -40,11 +40,28 @@ const PreviewReport: React.FC<TPreviewReport> = ({ report }) => {
     if (report) {
       const intro = report?.intro?.choices[0]?.message?.content
       const specifications = report?.specifications?.choices[0]?.message?.content
+      const inspection = report?.inspection?.choices[0]?.message?.content
+      const comments = report?.comments
+      const suggestions = report?.suggestions
 
       const formattedIntro = `<h2>Condições gerais</h2><br />${intro}`
       const formattedSpecs = `<h2>Condições específicas</h2><br />${specifications}`
+      const formattedInspection = `<h2>Inspeção final</h2><br />${inspection}`
 
-      setReportText(formattedIntro + '\n\n' + formattedSpecs)
+      const formattedComments = `<h2>Notas e comentários</h2><br />${comments}`
+      const formattedSuggestions = `<h2>Observações e sugestões</h2><br />${suggestions}`
+
+      let reportTextString = formattedIntro + '\n\n' + formattedSpecs + '\n\n' + formattedInspection
+
+      if (comments) {
+        reportTextString = reportTextString + '\n\n' + formattedComments
+      }
+
+      if (suggestions) {
+        reportTextString = reportTextString + '\n\n' + formattedSuggestions
+      }
+
+      setReportText(reportTextString)
     }
   }, [])
 

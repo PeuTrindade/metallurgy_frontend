@@ -13,14 +13,14 @@ import { createReport } from '@/requestFunctions/reports'
 import { useRouter } from 'next/router'
 import PreviewReport from '../report/PreviewReport'
 import FinalStepsSchema from '@/schemas/parts/finalSteps'
-import { updateInspection } from '@/requestFunctions/finalSteps'
+import { updateComment, updateInspection, updateSuggestion } from '@/requestFunctions/finalSteps'
 
 const ManageCards = ({
   steps,
-  setSteps,
   inspection,
-  setInspection,
-}: { steps: TPartStep[]; setSteps: any; inspection: any; setInspection: any }) => {
+  comment,
+  suggestion,
+}: { steps: TPartStep[]; inspection: any; comment: any; suggestion: any }) => {
   const { query } = useRouter()
   const { accessToken } = useUser()
   const [index, setIndex] = useState(0)
@@ -34,6 +34,8 @@ const ManageCards = ({
     errors: finalStepsErrors,
     setValue: setFinalStepValue,
     inspection: finalStepInspection,
+    comments: finalStepComment,
+    suggestions: finalStepSuggestion,
   } = FinalStepsSchema()
 
   const updateStepFn = async () => {
@@ -67,13 +69,46 @@ const ManageCards = ({
     setIndex(index - 1)
   }
 
+  const updateInspectionFn = async () => {
+    try {
+      const inspectionResponse = (await updateInspection(inspection.id, finalStepInspection, accessToken)) as Response
+      return inspectionResponse.ok
+    } catch (error) {
+      return false
+    }
+  }
+
+  const updateCommentFn = async () => {
+    try {
+      const inspectionResponse = (await updateComment(comment.id, finalStepComment ?? '', accessToken)) as Response
+      return inspectionResponse.ok
+    } catch (error) {
+      return false
+    }
+  }
+
+  const updateSuggestionFn = async () => {
+    try {
+      const inspectionResponse = (await updateSuggestion(
+        suggestion.id,
+        finalStepSuggestion ?? '',
+        accessToken,
+      )) as Response
+      return inspectionResponse.ok
+    } catch (error) {
+      return false
+    }
+  }
+
   const generateReportFn = async () => {
     try {
       setIsLoadingReport(true)
 
-      const inspectionResponse = (await updateInspection(inspection.id, finalStepInspection, accessToken)) as Response
+      const results = await Promise.all([updateInspectionFn(), updateCommentFn(), updateSuggestionFn()])
 
-      if (inspectionResponse.ok) {
+      if (results.includes(false)) {
+        toast('Ocorreu um erro ao gerar relatório! Tente novamente.', { type: 'error' })
+      } else {
         const response = (await createReport(+(query.id as string), accessToken)) as Response
 
         if (response.ok) {
@@ -85,12 +120,11 @@ const ManageCards = ({
         } else {
           toast('Ocorreu um erro ao gerar relatório! Tente novamente.', { type: 'error' })
         }
-      } else {
-        toast('Ocorreu um erro ao gerar relatório! Tente novamente.', { type: 'error' })
       }
 
       setIsLoadingReport(false)
     } catch (error) {
+      setIsLoadingReport(false)
       toast('Ocorreu um erro inesperado! Tente novamente.', { type: 'error' })
     }
   }
@@ -105,7 +139,15 @@ const ManageCards = ({
     if (inspection) {
       setFinalStepValue('inspection', inspection.description)
     }
-  }, [currentStep])
+
+    if (comment) {
+      setFinalStepValue('comments', comment.description)
+    }
+
+    if (suggestion) {
+      setFinalStepValue('suggestions', suggestion.description)
+    }
+  }, [currentStep, inspection, comment, suggestion])
 
   if (reportInfo) return <PreviewReport report={reportInfo} />
 
@@ -114,7 +156,9 @@ const ManageCards = ({
       <Card className="w-[100%] mt-12">
         <CardHeader>
           <CardTitle>Inspeção final</CardTitle>
-          <CardDescription>Descreva o estado da peça após a conclusão de todas as etapas.</CardDescription>
+          <CardDescription>
+            Descreva o estado da peça após a conclusão de todas as etapas, e como se deu o processo de inspeção.
+          </CardDescription>
         </CardHeader>
 
         <CardContent>
@@ -124,6 +168,40 @@ const ManageCards = ({
               error={finalStepsErrors.inspection?.message?.toString()}
               {...finalStepsRegister('inspection')}
               placeholder="Descreva sobre o estado final da peça com detalhes"
+              className="w-full"
+            />
+          </form>
+        </CardContent>
+
+        <CardHeader>
+          <CardTitle>Notas e comentários</CardTitle>
+          <CardDescription>Caso necessário, deixe notas e comentários para os leitores.</CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <Textarea
+              height="min-h-[200px]"
+              error={finalStepsErrors.comments?.message?.toString()}
+              {...finalStepsRegister('comments')}
+              placeholder="Deixe notas e comentários..."
+              className="w-full"
+            />
+          </form>
+        </CardContent>
+
+        <CardHeader>
+          <CardTitle>Observações e sugestões</CardTitle>
+          <CardDescription>Caso necessário, deixe observações e sugestões para os leitores.</CardDescription>
+        </CardHeader>
+
+        <CardContent>
+          <form onSubmit={(e) => e.preventDefault()}>
+            <Textarea
+              height="min-h-[200px]"
+              error={finalStepsErrors.suggestions?.message?.toString()}
+              {...finalStepsRegister('suggestions')}
+              placeholder="Deixe observações e sugestões..."
               className="w-full"
             />
           </form>

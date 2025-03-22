@@ -53,7 +53,7 @@ const Part = () => {
         </h2>
 
         <div className="mt-12">
-          <ViewPartCard name={part.name} description={part.description} company={part.hiringCompany} tag={part.tag} />
+          <ViewPartCard images={part.images} name={part.name} description={part.description} company={part.hiringCompany} tag={part.tag} />
         </div>
       </PageContainer>
     )

@@ -11,9 +11,10 @@ type TViewPartCard = {
   description: string
   tag: string
   company: string
+  images: string[]
 }
 
-export function ViewPartCard({ name, description, tag, company }: TViewPartCard) {
+export function ViewPartCard({ name, description, tag, company, images }: TViewPartCard) {
   return (
     <Card className="w-[100%] mb-6">
       <CardHeader>
@@ -42,6 +43,15 @@ export function ViewPartCard({ name, description, tag, company }: TViewPartCard)
             <div className="flex flex-col space-y-1.5">
               <Label htmlFor="name">Descrição:</Label>
               <CardDescription>{description}</CardDescription>
+            </div>
+
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="name">Imagens:</Label>
+              <div className="flex space-x-2">
+                {images.map((img, key) => (
+                  <img key={key} src={img} className="w-48 h-48 object-cover rounded-lg border" alt={`Imagem ${key}`} />
+                ))}
+              </div>
             </div>
           </div>
         </form>

@@ -18,6 +18,7 @@ export function PartCard() {
   const [isLoadingFlows, setIsLoadingFlows] = React.useState(true)
   const [isLoading, setIsLoading] = React.useState(false)
   const { accessToken } = useUser()
+  const [images, setImages] = React.useState<File[]>([])
   const { company, isValid, reset, description, errors, flowId, tag, setValue, name, register, setError, clearErrors } =
     CreatePartSchema()
 
@@ -52,6 +53,7 @@ export function PartCard() {
         tag,
         hiringCompany: company,
         flow_id: +flowId,
+        image: images,
       }
 
       const response = (await createPart(requestData, accessToken)) as Response
@@ -67,6 +69,11 @@ export function PartCard() {
     } catch (error) {
       toast('Ocorreu um erro inesperado! Tente novamente.', { type: 'error' })
     }
+  }
+
+  const handleFileChange = (event: any) => {
+    const newFiles = Array.from(event.target.files) as File[]
+    setImages((prev) => [...prev, ...newFiles])
   }
 
   React.useEffect(() => {
@@ -136,13 +143,26 @@ export function PartCard() {
               />
             </div>
           </div>
+
+          <div className="flex space-x-4 w-full mt-6">
+            <div className="flex flex-col space-y-1.5">
+              <Label htmlFor="description">Imagens da peça</Label>
+              <Input onChange={handleFileChange} type="file" accept="image/*" multiple />
+            </div>
+          </div>
         </form>
       </CardContent>
       <CardFooter className="flex justify-between">
-        <Button onClick={() => reset()} variant="outline">
+        <Button
+          onClick={() => {
+            reset()
+            setImages([])
+          }}
+          variant="outline"
+        >
           Limpar
         </Button>
-        <Button loading={isLoading} disabled={!isValid || isLoading} onClick={createPartFn}>
+        <Button loading={isLoading} disabled={!isValid || isLoading || !images.length} onClick={createPartFn}>
           Cadastrar
         </Button>
       </CardFooter>

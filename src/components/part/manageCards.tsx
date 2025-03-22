@@ -38,7 +38,7 @@ const ManageCards = ({
     suggestions: finalStepSuggestion,
   } = FinalStepsSchema()
 
-  const updateStepFn = async () => {
+  const updateStepFn = async (dontMove: boolean = false) => {
     try {
       const requestData: TUpdateStep = {
         description,
@@ -52,7 +52,9 @@ const ManageCards = ({
       if (response.ok) {
         toast('Etapa salva com sucesso!', { type: 'success' })
 
-        setIndex(index + 1)
+        if (!dontMove) {
+          setIndex(index + 1)
+        }
       } else {
         toast('Ocorreu um erro ao salvar etapa! Tente novamente.', { type: 'error' })
       }
@@ -71,8 +73,10 @@ const ManageCards = ({
 
   const updateInspectionFn = async () => {
     try {
-      const inspectionResponse = (await updateInspection(inspection.id, finalStepInspection, accessToken)) as Response
-      return inspectionResponse.ok
+      if (inspection?.id) {
+        const inspectionResponse = (await updateInspection(inspection.id, finalStepInspection, accessToken)) as Response
+        return inspectionResponse.ok
+      }
     } catch (error) {
       return false
     }
@@ -80,8 +84,10 @@ const ManageCards = ({
 
   const updateCommentFn = async () => {
     try {
-      const inspectionResponse = (await updateComment(comment.id, finalStepComment ?? '', accessToken)) as Response
-      return inspectionResponse.ok
+      if (comment?.id) {
+        const inspectionResponse = (await updateComment(comment.id, finalStepComment ?? '', accessToken)) as Response
+        return inspectionResponse.ok
+      }
     } catch (error) {
       return false
     }
@@ -89,12 +95,14 @@ const ManageCards = ({
 
   const updateSuggestionFn = async () => {
     try {
-      const inspectionResponse = (await updateSuggestion(
-        suggestion.id,
-        finalStepSuggestion ?? '',
-        accessToken,
-      )) as Response
-      return inspectionResponse.ok
+      if (suggestion?.id) {
+        const inspectionResponse = (await updateSuggestion(
+          suggestion.id,
+          finalStepSuggestion ?? '',
+          accessToken,
+        )) as Response
+        return inspectionResponse.ok
+      }
     } catch (error) {
       return false
     }
@@ -131,21 +139,21 @@ const ManageCards = ({
 
   useEffect(() => {
     if (currentStep) {
-      setValue('startDate', currentStep.startDate.split('T')[0])
-      setValue('finishDate', currentStep.finishDate.split('T')[0])
-      setValue('description', currentStep.description)
+      setValue('startDate', currentStep.startDate ? currentStep.startDate.split('T')[0] : '')
+      setValue('finishDate', currentStep.finishDate ? currentStep.finishDate.split('T')[0] : '')
+      setValue('description', currentStep.description ?? '')
     }
 
     if (inspection) {
-      setFinalStepValue('inspection', inspection.description)
+      setFinalStepValue('inspection', inspection.description ?? '')
     }
 
     if (comment) {
-      setFinalStepValue('comments', comment.description)
+      setFinalStepValue('comments', comment.description ?? '')
     }
 
     if (suggestion) {
-      setFinalStepValue('suggestions', suggestion.description)
+      setFinalStepValue('suggestions', suggestion.description ?? '')
     }
   }, [currentStep, inspection, comment, suggestion])
 
@@ -208,7 +216,7 @@ const ManageCards = ({
         </CardContent>
 
         <CardFooter className="flex justify-between">
-          <Button disabled={index == 0} onClick={() => setFinalSteps(false)} variant="outline">
+          <Button disabled={!finalSteps ? index == 0 : false} onClick={() => setFinalSteps(false)} variant="outline">
             Anterior
           </Button>
 
@@ -261,7 +269,14 @@ const ManageCards = ({
           Anterior
         </Button>
         {index + 1 == steps.length ? (
-          <Button onClick={() => setFinalSteps(true)}>Preencher dados finais</Button>
+          <Button
+            onClick={async () => {
+              await updateStepFn(true)
+              setFinalSteps(true)
+            }}
+          >
+            Preencher dados finais
+          </Button>
           // <Button loading={isLoadingReport} disabled={isLoadingReport} onClick={generateReportFn}>
           //   Gerar relatório
           // </Button>
